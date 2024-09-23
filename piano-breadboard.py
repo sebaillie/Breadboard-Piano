@@ -4,6 +4,10 @@ import musicpy as mp
 import sf2_loader as sf
 import concurrent.futures
 
+sf2_file = "path_to_sf2_file" # https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html
+
+reaction_time = .06  # time it should take to press down all chord keys
+
 buttonList = {
 	"C4": 10, 
 	"E4": 8, 
@@ -11,14 +15,9 @@ buttonList = {
 	"F4": 7
 }
 
-# https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html
-loader = sf.sf2_loader("path_to_sf2_file")
-
 def buttonCheck(name):
 	if GPIO.input(buttonList.get([item for item in buttonList][name])) == 1:
 		activeButtons.append([item for item in buttonList][name])
-
-activeButtons = []
 
 try:
 	GPIO.setwarnings(False)
@@ -27,6 +26,9 @@ try:
 	for button in buttonList:
 		GPIO.setup(buttonList[button],GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+	loader = sf.sf2_loader(sf2_file)
+	activeButtons = []
+
 	while True:
 		buttonHistory = activeButtons
 		activeButtons = []
@@ -34,7 +36,7 @@ try:
 		with concurrent.futures.ThreadPoolExecutor(max_workers=len(buttonList)) as executor:
 			executor.map(buttonCheck, range(len(buttonList)))
 
-		time.sleep(.06) # time it should take to press down all chord keys
+		time.sleep(reaction_time)
 
 		if len(activeButtons) == 0:
 			continue
