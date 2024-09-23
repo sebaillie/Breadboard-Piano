@@ -38,9 +38,7 @@ try:
 
 		time.sleep(reaction_time)
 
-		if len(activeButtons) == 0:
-			continue
-		else:
+		if len(activeButtons) > 0:
 			if len(activeButtons) - len(buttonHistory) > 1:
 				loader.play_chord(mp.chord(','.join(activeButtons)))
 			elif len(activeButtons) - len(buttonHistory) == 1:
